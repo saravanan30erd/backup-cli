@@ -1,0 +1,17 @@
+##Generic Configuration
+APP=$1
+BACKUP_DIR=/opt/backup
+TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
+
+#JIRA Database credentials
+JDB_NAME=
+JDB_HOST=
+JDB_USERNAME=
+JDB_PASSWORD=
+#Note: DB_HOST not required if this script running in same server.
+
+#Confluence Database credentials
+CDB_NAME=
+CDB_HOST=
+CDB_USERNAME=
+CDB_PASSWORD=

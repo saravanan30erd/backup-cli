@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -e
+export CLI_WORKDIR=$(cd $(dirname $0) && pwd)
+
+. "$CLI_WORKDIR/common"
+
+cli_help() {
+  cli_name=${0##*/}
+  echo "
+$cli_name
+Backup CLI supports various backup functionalities
+
+Usage: $cli_name [command]
+
+Commands:
+  jira        Take backup for Jira server
+  confluence  Take backup for Confluence server
+  gitlab      Take backup for Gitlab server
+  *         Help
+"
+  exit 1
+}
+
+cli_log "Exporting config ..."
+[ ! -f "$CLI_WORKDIR/config" ] \
+  && echo "ERROR: No $CLI_WORKDIR/config file found. " \
+  && echo "cp $CLI_WORKDIR/config.template $CLI_WORKDIR/config and adjust." \
+  && exit 1
+export $(cat "$CLI_WORKDIR/config" | xargs)
+
+case "$1" in
+
+  jira)
+    "$CLI_WORKDIR/commands/jira" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+    ;;
+
+  confluence)
+    "$CLI_WORKDIR/commands/confluence" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+  ;;
+
+  *)
+    cli_help
+    ;;
+esac
