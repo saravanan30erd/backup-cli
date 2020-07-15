@@ -17,6 +17,7 @@ if [ ! -d $BACKUP_DIR/$APP ]; then
   mkdir -p $BACKUP_DIR/$APP;
 fi
 
+TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
 DAILY_BACKUP=$BACKUP_DIR/$APP/$APP-$TIMESTAMP
 
 if [ ! -d $DAILY_BACKUP ]; then
