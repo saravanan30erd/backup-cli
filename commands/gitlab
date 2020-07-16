@@ -29,13 +29,6 @@ take_dump() {
   cli_log "Backup Complete"
 }
 
-azure_upload() {
-  cd $BACKUP_DIR
-  az storage blob upload --container-name $BLOB_BACKUP_CONTAINER \
-    --file $APP/$APP-$TIMESTAMP.tar.gz \
-    --name $APP/$APP-$TIMESTAMP.tar.gz
-}
-
 if [ "$2" == "local" ]; then
   take_dump;
 elif [ "$2" == "azure" ]; then
