@@ -12,28 +12,49 @@ Usage:
 }
 
 [ ! -n "$2" ] && cli_help_jira
+if [ "$2" == "-h" ]; then
+  cli_help_jira
+fi
 
 if [ ! -d $BACKUP_DIR/$APP ]; then
   mkdir -p $BACKUP_DIR/$APP;
 fi
 
+APP=$1
 TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
 DAILY_BACKUP=$BACKUP_DIR/$APP/$APP-$TIMESTAMP
 
 if [ ! -d $DAILY_BACKUP ]; then
   mkdir -p $DAILY_BACKUP;
 fi
-#DB DUMP
-cli_log "Taking DB Dump"
-mysqldump -u $JDB_USERNAME -p$JDB_PASSWORD $JDB_NAME > $DAILY_BACKUP/$APP.sql
-cli_log "DB DUMP done."
-#HOME DIR BACKUP
-cli_log "Backing up Home directory"
-tar cvzf $DAILY_BACKUP/home-dir.tar.gz /var/atlassian/application-data/$APP
-#INSTALLATION DIR BACKUP
-cli_log "Backing up Install directory"
-tar cvzf $DAILY_BACKUP/install.tar.gz /opt/atlassian/$APP
-cli_log "ZIPing backup directory"
-cd $BACKUP_DIR/$APP && tar cvzf $APP-$TIMESTAMP.tar.gz $APP-$TIMESTAMP
-rm -rf $DAILY_BACKUP
-cli_log "Backup Complete"
+
+take_dump() {
+  #DB DUMP
+  cli_log "Taking DB Dump"
+  mysqldump -u $JDB_USERNAME -p$JDB_PASSWORD $JDB_NAME > $DAILY_BACKUP/$APP.sql
+  cli_log "DB DUMP done."
+  #HOME DIR BACKUP
+  cli_log "Backing up Home directory"
+  tar cvzf $DAILY_BACKUP/home-dir.tar.gz /var/atlassian/application-data/$APP
+  #INSTALLATION DIR BACKUP
+  cli_log "Backing up Install directory"
+  tar cvzf $DAILY_BACKUP/install.tar.gz /opt/atlassian/$APP
+  cli_log "ZIPing backup directory"
+  cd $BACKUP_DIR/$APP && tar cvzf $APP-$TIMESTAMP.tar.gz $APP-$TIMESTAMP
+  rm -rf $APP-$TIMESTAMP
+  cli_log "Backup Complete"
+}
+
+azure_upload() {
+  cd $BACKUP_DIR
+  az storage blob upload --container-name $BLOB_BACKUP_CONTAINER \
+    --file $APP/$APP-$TIMESTAMP.tar.gz \
+    --name $APP/$APP-$TIMESTAMP.tar.gz
+}
+
+if [ "$2" == "local" ]; then
+  take_dump;
+elif [ "$2" == "azure" ]; then
+  take_dump;
+  azure_upload;
+fi

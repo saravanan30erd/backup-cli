@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -e
+. "$CLI_WORKDIR/common"
+
+cli_help_gitlab() {
+  echo "
+Command: gitlab
+
+Usage:
+  gitlab  Take backup for gitlab server(self-hosted)"
+  exit 1
+}
+
+[ ! -n "$2" ] && cli_help_gitlab
+if [ "$2" == "-h" ]; then
+  cli_help_gitlab
+fi
+
+APP=$1
+TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
+
+take_dump() {
+  cli_log "Taking Gitlab Dump"
+  /opt/gitlab/bin/gitlab-backup create SKIP=registry CRON=1
+  cd $BACKUP_DIR/$APP
+  cp -rpf /etc/gitlab/gitlab.rb gitlab.rb
+  cp -rpf /etc/gitlab/gitlab-secrets.json gitlab-secrets.json
+  tar cvzf $APP-$TIMESTAMP.tar.gz .
+  cli_log "Backup Complete"
+}
+
+azure_upload() {
+  cd $BACKUP_DIR
+  az storage blob upload --container-name $BLOB_BACKUP_CONTAINER \
+    --file $APP/$APP-$TIMESTAMP.tar.gz \
+    --name $APP/$APP-$TIMESTAMP.tar.gz
+}
+
+if [ "$2" == "local" ]; then
+  take_dump;
+elif [ "$2" == "azure" ]; then
+  take_dump;
+  azure_upload;
+fi

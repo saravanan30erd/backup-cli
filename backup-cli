@@ -38,6 +38,10 @@ case "$1" in
     "$CLI_WORKDIR/commands/confluence" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
   ;;
 
+  gitlab)
+    "$CLI_WORKDIR/commands/gitlab" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+  ;;
+
   *)
     cli_help
     ;;

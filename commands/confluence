@@ -2,21 +2,25 @@
 set -e
 . "$CLI_WORKDIR/common"
 
-cli_help_jira() {
+cli_help_confluence() {
   echo "
-Command: jira
+Command: confluence
 
 Usage:
-  jira  Take backup for Jira server(self-hosted)"
+  confluence  Take backup for confluence server(self-hosted)"
   exit 1
 }
 
-[ ! -n "$2" ] && cli_help_jira
+[ ! -n "$2" ] && cli_help_confluence
+if [ "$2" == "-h" ]; then
+  cli_help_confluence
+fi
 
 if [ ! -d $BACKUP_DIR/$APP ]; then
   mkdir -p $BACKUP_DIR/$APP;
 fi
 
+APP=$1
 TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
 DAILY_BACKUP=$BACKUP_DIR/$APP/$APP-$TIMESTAMP
 

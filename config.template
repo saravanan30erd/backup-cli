@@ -1,7 +1,7 @@
+## Note: Remove all the comments after copied to config file ##
+
 ##Generic Configuration
-APP=$1
 BACKUP_DIR=/opt/backup
-TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
 
 #JIRA Database credentials
 JDB_NAME=
@@ -15,3 +15,7 @@ CDB_NAME=
 CDB_HOST=
 CDB_USERNAME=
 CDB_PASSWORD=
+
+#Azure blob details
+AZURE_STORAGE_CONNECTION_STRING=
+BLOB_BACKUP_CONTAINER=
