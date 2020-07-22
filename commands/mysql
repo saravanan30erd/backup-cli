@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -e
+. "$CLI_WORKDIR/common"
+
+cli_help_mysql() {
+  echo "
+Command: mysql
+
+backup-cli mysql <dbname> <local/azure blob/aws s3>
+
+Usage:
+  mysql  Take backup for Mysql/MariaDB Databases using mysqldump"
+  exit 1
+}
+
+[ ! -n "$2" ] && cli_help_mysql
+if [ "$2" == "-h" ]; then
+  cli_help_mysql
+fi
+
+if [ ! -d $BACKUP_DIR/$APP ]; then
+  mkdir -p $BACKUP_DIR/$APP;
+fi
+
+APP=$1
+TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
+DAILY_BACKUP=$BACKUP_DIR/$APP/$APP-$TIMESTAMP
+
+if [ ! -d $DAILY_BACKUP ]; then
+  mkdir -p $DAILY_BACKUP;
+fi
+
+take_db_dump() {
+  cli_log "Taking $1 DB Dump"
+  mysqldump -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $1 > $DAILY_BACKUP/$1.sql
+  cli_log "$1 DB DUMP done."
+}
+
+take_all_dump() {
+  for i in `echo 'show databases' | mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD \
+    | grep -v Database | grep -v information_schema \
+    | grep -v performance_schema | grep -v mysql`;
+  do
+    take_db_dump $i;
+  done
+}
+
+local_backup() {
+  cd $BACKUP_DIR/$APP && tar czf $APP-$TIMESTAMP.tar.gz $APP-$TIMESTAMP
+  rm -rf $APP-$TIMESTAMP
+  cli_log "Backup Complete"
+}
+
+if [ "$1" != "all" ]; then
+  take_db_dump $1;
+  if [ "$2" == "local" ]; then
+    local_backup;
+  elif [ "$2" == "s3" ]; then
+    local_backup;
+    s3_upload;
+  fi
+else
+  take_all_dump;
+  if [ "$2" == "local" ]; then
+    local_backup;
+  elif [ "$2" == "s3" ]; then
+    local_backup;
+    s3_upload;
+  fi
+fi

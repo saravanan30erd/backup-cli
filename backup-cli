@@ -48,6 +48,10 @@ case "$1" in
     "$CLI_WORKDIR/commands/gitlab" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
   ;;
 
+  mysql)
+    "$CLI_WORKDIR/commands/gitlab" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+  ;;
+
   *)
     cli_help
     ;;
