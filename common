@@ -15,3 +15,13 @@ azure_upload() {
   rm -rf $APP/$APP-$TIMESTAMP.tar.gz
   cli_log "Clean local files - Backup to Azure"
 }
+
+s3_upload() {
+  cli_log "Starting - Backup to S3"
+  cd $BACKUP_DIR
+  aws s3 cp $APP/$APP-$TIMESTAMP.tar.gz \
+    s3://$S3_BUCKET/$APP/$APP-$TIMESTAMP.tar.gz
+  cli_log "Completed - Backup to S3"
+  rm -rf $APP/$APP-$TIMESTAMP.tar.gz
+  cli_log "Clean local files - Backup to S3"
+}
