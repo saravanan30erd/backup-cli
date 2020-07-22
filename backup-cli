@@ -49,7 +49,7 @@ case "$1" in
   ;;
 
   mysql)
-    "$CLI_WORKDIR/commands/gitlab" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+    "$CLI_WORKDIR/commands/mysql" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
   ;;
 
   *)
