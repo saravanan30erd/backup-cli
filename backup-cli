@@ -21,6 +21,12 @@ Commands:
   exit 1
 }
 
+cli_log "Setup logs directory ..."
+if [ ! -d "$CLI_WORKDIR/logs" ]; then
+  mkdir -p "$CLI_WORKDIR/logs";
+fi
+
+
 cli_log "Exporting config ..."
 [ ! -f "$CLI_WORKDIR/config" ] \
   && echo "ERROR: No $CLI_WORKDIR/config file found. " \
