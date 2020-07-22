@@ -25,7 +25,8 @@ take_dump() {
   cd $BACKUP_DIR/$APP
   cp -rpf /etc/gitlab/gitlab.rb gitlab.rb
   cp -rpf /etc/gitlab/gitlab-secrets.json gitlab-secrets.json
-  tar cvzf $APP-$TIMESTAMP.tar.gz .
+  tar cvzf $APP-$TIMESTAMP.tar.gz *_gitlab_backup.tar gitlab.rb gitlab-secrets.json
+  rm -vf *_gitlab_backup.tar gitlab.rb gitlab-secrets.json
   cli_log "Backup Complete"
 }
 
