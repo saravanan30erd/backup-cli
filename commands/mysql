@@ -51,19 +51,21 @@ local_backup() {
   cli_log "Backup Complete"
 }
 
-if [ "$1" != "all" ]; then
-  take_db_dump $1;
-  if [ "$2" == "local" ]; then
+if [ "$2" != "all" ]; then
+  echo "single"
+  take_db_dump $2;
+  if [ "$3" == "local" ]; then
     local_backup;
-  elif [ "$2" == "s3" ]; then
+  elif [ "$3" == "s3" ]; then
     local_backup;
     s3_upload;
   fi
 else
+  echo "all"
   take_all_dump;
-  if [ "$2" == "local" ]; then
+  if [ "$3" == "local" ]; then
     local_backup;
-  elif [ "$2" == "s3" ]; then
+  elif [ "$3" == "s3" ]; then
     local_backup;
     s3_upload;
   fi
