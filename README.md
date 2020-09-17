@@ -1,6 +1,8 @@
 # backup-cli
 Bash cli with various backup functionalities
 
+config.template should be copied into config file, where we should update the details.
+
 steps
 -------
 
