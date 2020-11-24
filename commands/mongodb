@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -e
+. "$CLI_WORKDIR/common"
+
+cli_help_mongodb() {
+  echo "
+Command: mongodb
+
+backup-cli mongodb <local/s3>
+
+Usage:
+  mongodb  Take backup for Mongodb Databases using mongodump"
+  exit 1
+}
+
+[ ! -n "$2" ] && cli_help_mongodb
+if [ "$2" == "-h" ]; then
+  cli_help_mongodb
+fi
+
+if [ ! -d $BACKUP_DIR/$APP ]; then
+  mkdir -p $BACKUP_DIR/$APP;
+fi
+
+APP=$1
+TIMESTAMP=`date "+%d-%b-%y_%H-%M-%S"`
+DAILY_BACKUP=$BACKUP_DIR/$APP/$APP-$TIMESTAMP
+
+if [ ! -d $DAILY_BACKUP ]; then
+  mkdir -p $DAILY_BACKUP;
+fi
+
+take_db_dump() {
+  cli_log "Taking $1 DB Dump"
+  mongodump --uri="$MONGODB_URI" --out=$DAILY_BACKUP ${@:3}
+  cli_log "$1 DB DUMP done."
+}
+
+local_backup() {
+  cd $BACKUP_DIR/$APP && tar czf $APP-$TIMESTAMP.tar.gz $APP-$TIMESTAMP
+  rm -rf $APP-$TIMESTAMP
+  cli_log "Backup Complete"
+}
+
+
+if [ "$2" == "local" ]; then
+    take_db_dump $@;
+    local_backup;
+elif [ "$2" == "s3" ]; then
+    take_db_dump $@;
+    local_backup;
+    s3_upload; 
+    echo "S3 done"
+fi

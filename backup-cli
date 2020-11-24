@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+
 export CLI_WORKDIR=$(cd $(dirname $0) && pwd)
 
 . "$CLI_WORKDIR/common"
@@ -50,6 +50,10 @@ case "$1" in
 
   mysql)
     "$CLI_WORKDIR/commands/mysql" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+  ;;
+
+  mongodb)
+    "$CLI_WORKDIR/commands/mongodb" $@ | tee -ia "$CLI_WORKDIR/logs/${2}.log"
   ;;
 
   *)
