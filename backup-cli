@@ -52,6 +52,10 @@ case "$1" in
     "$CLI_WORKDIR/commands/mysql" "$@" | tee -ia "$CLI_WORKDIR/logs/${2}.log"
   ;;
 
+  mongodb)
+    "$CLI_WORKDIR/commands/mongodb" $@ | tee -ia "$CLI_WORKDIR/logs/${2}.log"
+  ;;
+
   *)
     cli_help
     ;;
